@@ -4,7 +4,7 @@
   "installCommand": "npm install",
   "framework": "nextjs",
   "functions": {
-    "src/app/api/**/*": {
+    "app/api/**/*": {
       "memory": 1024,
       "maxDuration": 10
     }
