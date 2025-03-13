@@ -1,11 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    typedRoutes: false,
-    serverActions: {
-      bodySizeLimit: '2mb',
-      allowedOrigins: ['*']
-    }
+    serverActions: true
   },
   
   eslint: {
