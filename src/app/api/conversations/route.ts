@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create conversation and initial message in a transaction
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: typeof prisma) => {
       const conversation = await tx.conversations.create({
         data: {
           userId: userId || undefined,

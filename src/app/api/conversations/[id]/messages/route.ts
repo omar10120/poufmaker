@@ -150,7 +150,7 @@ export async function POST(
     }
 
     // Create message and update conversation timestamp in a transaction
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: typeof prisma) => {
       const message = await tx.messages.create({
         data: {
           conversationId: params.id,
