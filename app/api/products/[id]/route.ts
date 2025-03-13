@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 
+type RouteSegment = { id: string };
+
 /**
  * @swagger
  * /api/products/{id}:
@@ -86,11 +88,12 @@ import { verifyToken } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<RouteSegment> }
 ) {
   try {
+    const { id } = await params;
     const product = await prisma.products.findUnique({
-      where: { Id: params.id },
+      where: { Id: id },
       include: {
         creator: {
           select: {
@@ -144,9 +147,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<RouteSegment> }
 ) {
   try {
+    const { id } = await params;
     const token = request.headers.get('authorization')?.split(' ')[1];
     if (!token) {
       return NextResponse.json(
@@ -164,7 +168,7 @@ export async function PUT(
     }
 
     const product = await prisma.products.findUnique({
-      where: { Id: params.id },
+      where: { Id: id },
       select: { creatorId: true }
     });
 
@@ -193,7 +197,7 @@ export async function PUT(
     if (status) updateData.status = status;
 
     const updatedProduct = await prisma.products.update({
-      where: { Id: params.id },
+      where: { Id: id },
       data: updateData,
       include: {
         creator: {
@@ -231,9 +235,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<RouteSegment> }
 ) {
   try {
+    const { id } = await params;
     const token = request.headers.get('authorization')?.split(' ')[1];
     if (!token) {
       return NextResponse.json(
@@ -251,7 +256,7 @@ export async function DELETE(
     }
 
     const product = await prisma.products.findUnique({
-      where: { Id: params.id },
+      where: { Id: id },
       select: { creatorId: true }
     });
 
@@ -271,7 +276,7 @@ export async function DELETE(
     }
 
     await prisma.products.delete({
-      where: { Id: params.id }
+      where: { Id: id }
     });
 
     return NextResponse.json({ message: 'Product deleted successfully' });

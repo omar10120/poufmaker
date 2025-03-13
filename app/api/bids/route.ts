@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is an upholsterer
-    if (!isUpholsterer(decodedToken.role)) {
+    if (!isUpholsterer(decodedToken.role.toString())) {
       return NextResponse.json(
         { error: 'Only upholsterers can create bids' },
         { status: 401 }

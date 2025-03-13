@@ -1,6 +1,6 @@
-import { prisma } from '../../../../lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '../../../../lib/auth';
+import { verifyToken } from '@/lib/auth';
 
 /**
  * @swagger
@@ -33,33 +33,33 @@ import { verifyToken } from '../../../../lib/auth';
  *       500:
  *         description: Server error
  */
-interface RouteParams {
-  params: { id: string };
-}
+
+type RouteSegment = { id: string };
 
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<RouteSegment> }
 ) {
   try {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
     const before = searchParams.get('before');
 
     // Verify conversation exists
     const conversation = await prisma.conversations.findUnique({
-      where: { Id: params.id }
+      where: { Id: id }
     });
 
     if (!conversation) {
-      return Response.json(
+      return NextResponse.json(
         { error: 'Conversation not found' },
         { status: 404 }
       );
     }
 
     const where: any = {
-      conversationId: params.id
+      conversationId: id
     };
 
     if (before) {
@@ -76,10 +76,10 @@ export async function GET(
       take: limit
     });
 
-    return Response.json(messages);
+    return NextResponse.json(messages);
   } catch (error) {
     console.error('Error fetching messages:', error);
-    return Response.json(
+    return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );
@@ -125,16 +125,18 @@ export async function GET(
  */
 export async function POST(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<RouteSegment> }
 ) {
   try {
+    const { id } = await params;
+    
     // Verify conversation exists
     const conversation = await prisma.conversations.findUnique({
-      where: { Id: params.id }
+      where: { Id: id }
     });
 
     if (!conversation) {
-      return Response.json(
+      return NextResponse.json(
         { error: 'Conversation not found' },
         { status: 404 }
       );
@@ -143,7 +145,7 @@ export async function POST(
     const { content, isUser = true } = await request.json();
 
     if (!content) {
-      return Response.json(
+      return NextResponse.json(
         { error: 'Message content is required' },
         { status: 400 }
       );
@@ -153,7 +155,7 @@ export async function POST(
     const result = await prisma.$transaction(async (tx) => {
       const message = await tx.messages.create({
         data: {
-          conversationId: params.id,
+          conversationId: id,
           content,
           isUser
         }
@@ -161,17 +163,17 @@ export async function POST(
 
       // Update conversation timestamp
       await tx.conversations.update({
-        where: { Id: params.id },
+        where: { Id: id },
         data: { updatedAt: new Date() }
       });
 
       return message;
     });
 
-    return Response.json(result, { status: 201 });
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error('Error creating message:', error);
-    return Response.json(
+    return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     );

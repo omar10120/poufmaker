@@ -23,17 +23,16 @@ import { verifyToken } from '@/lib/auth';
  *       500:
  *         description: Server error
  */
-interface RouteParams {
-  params: { id: string };
-}
+type RouteSegment = { id: string };
 
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<RouteSegment> }
 ): Promise<Response> {
   try {
+    const { id } = await params;
     const conversation = await prisma.conversations.findUnique({
-      where: { Id: params.id },
+      where: { Id: id },
       include: {
         messages: {
           orderBy: {
@@ -94,9 +93,10 @@ export async function GET(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: RouteParams
+  { params }: { params: Promise<RouteSegment> }
 ): Promise<Response> {
   try {
+    const { id } = await params;
     const token = request.headers.get('authorization')?.split(' ')[1];
     if (!token) {
       return NextResponse.json(
@@ -114,7 +114,7 @@ export async function DELETE(
     }
 
     const conversation = await prisma.conversations.findUnique({
-      where: { Id: params.id },
+      where: { Id: id },
       select: { userId: true }
     });
 
@@ -136,10 +136,10 @@ export async function DELETE(
     // Delete conversation (this will cascade delete messages due to the relation)
     await prisma.$transaction([
       prisma.messages.deleteMany({
-        where: { conversationId: params.id }
+        where: { conversationId: id }
       }),
       prisma.conversations.delete({
-        where: { Id: params.id }
+        where: { Id: id }
       })
     ]);
 

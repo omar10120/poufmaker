@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 
     // Update user to confirm email
     await prisma.users.update({
-      where: { id: user.id },
+      where: { Id: user.Id },
       data: {
         emailConfirmed: true,
         confirmationToken: null
