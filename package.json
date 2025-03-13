@@ -2,12 +2,13 @@
   "name": "poufmaker-main-api",
   "version": "0.1.0",
   "private": true,
- "scripts": {
-  "dev": "cross-env NEXT_DISABLE_ESLINT=1 next dev",
-  "build": "prisma generate && next build",
-  "start": "next start",
-  "lint": "next lint"
-},
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate"
+  },
   "dependencies": {
     "@prisma/client": "^6.4.1",
     "@types/jsonwebtoken": "^9.0.9",
@@ -22,17 +23,13 @@
     "swagger-ui-react": "^5.20.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@types/swagger-ui-react": "^5.18.0",
-    "@types/webpack": "^5.28.5",
     "cross-env": "^7.0.3",
     "eslint": "^8",
     "eslint-config-next": "15.2.1",
-    "tailwindcss": "^4",
     "typescript": "^5"
   }
 }

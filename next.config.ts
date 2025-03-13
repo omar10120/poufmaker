@@ -1,6 +1,5 @@
-import { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   experimental: {
     typedRoutes: false,
     serverActions: {
@@ -10,21 +9,17 @@ const nextConfig: NextConfig = {
   },
   
   eslint: {
-    ignoreDuringBuilds: true, // Disable ESLint in production build
+    ignoreDuringBuilds: true
   },
 
   typescript: {
-    ignoreBuildErrors: true, // Disable TypeScript errors during production build
+    ignoreBuildErrors: true
   },
 
-  // Disable CSS minification and optimization
-  optimizeFonts: false,
-  swcMinify: false,
-  
-  webpack: (config) => {
-    config.optimization.minimize = false;
-    return config;
-  }
+  // Configure output for Vercel deployment
+  output: 'standalone',
+  distDir: '.next',
+  generateBuildId: async () => 'build'
 };
 
 export default nextConfig;
