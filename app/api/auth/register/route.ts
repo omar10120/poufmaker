@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { generateConfirmationEmail, sendEmail } from '@/lib/email';
+import { sendEmail, generateConfirmationEmail } from '@/lib/email';
 
 /**
  * @swagger
